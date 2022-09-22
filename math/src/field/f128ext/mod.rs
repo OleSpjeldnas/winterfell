@@ -2,7 +2,8 @@
 use super::{ExtensibleField, FieldElement, StarkField};
 use core::{
     convert::{TryFrom, TryInto},
-    fmt::{Debug, Display, Formatter},
+    fmt::{Debug, Display},
+    fmt,
     mem,
     ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
     slice,
@@ -17,25 +18,17 @@ use utils::{
 #[cfg(test)]
 mod tests;
 
-// First implement ExtensibleField trait for u128 
-impl ExtensibleField<2> for u128 {
-    #[inline(always)]
-    fn mul(a: [Self; 2], b: [Self; 2]) -> [Self; 2] {
-        let z = a[0] * b[0];
-        [z + a[1] * b[1], (a[0] + a[1]) * (b[0] + b[1]) - z]
-    }
-
-    #[inline(always)]
-    fn mul_base(a: [Self; 2], b: Self) -> [Self; 2] {
-        [a[0] * b, a[1] * b]
-    }
-
-    #[inline(always)]
-    fn frobenius(x: [Self; 2]) -> [Self; 2] {
-        [x[0] + x[1], Self::ZERO - x[1]]
-    }
+fn mulu128(a: [u128;2], b: [u128;2]) -> [u128;2]{
+    let z = mul(a[0],b[0]);
+    [add(z,mul(a[1],b[1])), sub(mul(add(a[0],a[1]),add(b[0],b[1])),z)]
 }
+//fn mul_baseu128(a: [u128; 2], b: u128) -> [u128; 2] {
+  //  [mul(a[0],b), mul(a[1],b)]
+//}
 
+fn frobeniusu128(x: [u128; 2]) -> [u128; 2] {
+    [add(x[0],x[1]), sub(0,x[1])]
+}
 // CONSTANTS
 // ================================================================================================
 
@@ -79,26 +72,25 @@ impl FieldElement for BaseElement {
     const IS_CANONICAL: bool = true;
 
     fn inv(self) -> Self {
-        if self.0 == Self::ZERO && self.1 == Self::ZERO {
+        if self.0 == 0 && self.1 == 0 {
             return self;
         }
-        if self.1 == Self::ZERO {
-            return Self(inv(self.0), Self::ZERO);
+        if self.1 == 0 {
+            return Self(inv(self.0), 0);
         }
 
         let x = [self.0, self.1];
-        let numerator = <u128 as ExtensibleField<2>>::frobenius(x);
+        let numerator = frobeniusu128(x);
 
-        let norm = <u128 as ExtensibleField<2>>::mul(x, numerator);
-        debug_assert_eq!(norm[1], B::ZERO, "norm must be in the base field");
-        let denom_inv = norm[0].inv();
+        let norm = mulu128(x, numerator);
+        let denom_inv = inv(norm[0]);
 
         Self(numerator[0] * denom_inv, numerator[1] * denom_inv)
     }
 
     #[inline]
     fn conjugate(&self) -> Self {
-        let result = <u128 as ExtensibleField<2>>::frobenius([self.0, self.1]);
+        let result = frobeniusu128([self.0, self.1]);
         Self(result[0], result[1])
     }
 
@@ -133,9 +125,19 @@ impl FieldElement for BaseElement {
     }
 
     fn zeroed_vector(n: usize) -> Vec<Self> {
-        // get twice the number of base elements, and re-interpret them as quad field elements
-        let result = B::zeroed_vector(n * 2);
-        Self::base_to_quad_vector(result)
+        // this uses a specialized vector initialization code which requests zero-filled memory
+        // from the OS; unfortunately, this works only for built-in types and we can't use
+        // Self::ZERO here as much less efficient initialization procedure will be invoked.
+        // We also use u128 to make sure the memory is aligned correctly for our element size.
+        debug_assert_eq!(Self::ELEMENT_BYTES, mem::size_of::<u128>());
+        let result = vec![0u128; n];
+
+        // translate a zero-filled vector of u128s into a vector of base field elements
+        let mut v = core::mem::ManuallyDrop::new(result);
+        let p = v.as_mut_ptr();
+        let len = v.len();
+        let cap = v.capacity();
+        unsafe { Vec::from_raw_parts(p as *mut Self, len, cap) }
     }
 
     fn as_base_elements(elements: &[Self]) -> &[Self::BaseField] {
@@ -163,7 +165,7 @@ impl StarkField for BaseElement {
     /// sage: k = (MODULUS - 1) / 2^40 \
     /// sage: GF(MODULUS).primitive_element()^k \
     /// 23953097886125630542083529559205016746
-    const TWO_ADIC_ROOT_OF_UNITY: Self = BaseElement(G);
+    const TWO_ADIC_ROOT_OF_UNITY: Self = BaseElement(G.0,G.1);
 
     fn get_modulus_le_bytes() -> Vec<u8> {
         Self::MODULUS.to_le_bytes().to_vec()
@@ -196,7 +198,7 @@ impl Add for BaseElement {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
-        Self(self.0 + rhs.0, self.1 + rhs.1)
+        Self(add(self.0,rhs.0), add(self.1,rhs.1))
     }
 }
 
@@ -210,7 +212,7 @@ impl Sub for BaseElement {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
-        Self(self.0 - rhs.0, self.1 - rhs.1)
+        Self(sub(self.0, rhs.0), sub(self.1, rhs.1))
     }
 }
 
@@ -224,7 +226,7 @@ impl Mul for BaseElement {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self {
-        let result = <u128 as ExtensibleField<2>>::mul([self.0, self.1], [rhs.0, rhs.1]);
+        let result = mulu128([self.0, self.1], [rhs.0, rhs.1]);
         Self(result[0], result[1])
     }
 }
@@ -240,7 +242,7 @@ impl Div for BaseElement {
 
     #[allow(clippy::suspicious_arithmetic_impl)]
     fn div(self, rhs: Self) -> Self {
-        self * rhs.inv()
+        self.mul(rhs.inv())
     }
 }
 
@@ -254,7 +256,7 @@ impl Neg for BaseElement {
     type Output = Self;
 
     fn neg(self) -> Self {
-        Self(-self.0, -self.1)
+        Self(sub(0,self.0), sub(0,self.1))
     }
 }
 
@@ -292,7 +294,7 @@ impl From<u128> for BaseElement {
     /// Converts a 128-bit value into a field element. If the value is greater than or equal to
     /// the field modulus, modular reduction is silently performed.
     fn from(value: u128) -> Self {
-        BaseElement::new(value,0)
+        BaseElement(value,0)
     }
 }
 
@@ -330,7 +332,7 @@ impl From<[u8; 16]> for BaseElement {
     /// to the field modulus, modular reduction is silently performed.
     fn from(bytes: [u8; 16]) -> Self {
         let value = u128::from_le_bytes(bytes);
-        BaseElement::from(value,0)
+        BaseElement(value,0)
     }
 }
 
@@ -368,8 +370,8 @@ impl AsBytes for BaseElement {
 
 impl Serializable for BaseElement {
     fn write_into<W: ByteWriter>(&self, target: &mut W) {
-        self.0.write_into(target);
-        self.1.write_into(target);
+        write_into(self.0,target);
+        write_into(self.1,target);
     }
 }
 
@@ -548,7 +550,9 @@ fn inv(x: u128) -> u128 {
 
 // HELPER FUNCTIONS
 // ================================================================================================
-
+fn write_into<W: ByteWriter>(i: u128, target: &mut W) {
+    target.write_u8_slice(&i.to_le_bytes());
+}
 #[inline]
 fn mul_128x64(a: u128, b: u64) -> (u64, u64, u64) {
     let z_lo = ((a as u64) as u128) * (b as u128);

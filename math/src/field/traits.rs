@@ -267,6 +267,7 @@ pub trait ExtensibleField<const N: usize>: StarkField {
     }
 }
 
+
 // EXTENSION OF
 // ================================================================================================
 
