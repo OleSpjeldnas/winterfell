@@ -105,6 +105,7 @@ pub mod fields {
     //! of these field.
 
     pub use super::field::f128;
+    pub use super::field::f128ext;
     pub use super::field::f62;
     pub use super::field::f64;
     pub use super::field::CubeExtension;
