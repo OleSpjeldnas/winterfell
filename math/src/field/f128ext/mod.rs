@@ -284,8 +284,28 @@ impl ExtensibleField<2> for BaseElement {
     }
 }
 
-// CUBIC EXTENSION
-// ================================================================================================
+/// Cubic extension for this field is not implemented as quadratic extension already provides
+/// sufficient security level.
+impl ExtensibleField<3> for BaseElement {
+    fn mul(_a: [Self; 3], _b: [Self; 3]) -> [Self; 3] {
+        unimplemented!()
+    }
+
+    #[inline(always)]
+    fn mul_base(_a: [Self; 3], _b: Self) -> [Self; 3] {
+        unimplemented!()
+    }
+
+    #[inline(always)]
+    fn frobenius(_x: [Self; 3]) -> [Self; 3] {
+        unimplemented!()
+    }
+
+    fn is_supported() -> bool {
+        false
+    }
+}
+
 
 // TYPE CONVERSIONS
 // ================================================================================================
