@@ -85,7 +85,7 @@ impl FieldElement for BaseElement {
         let norm = mulu128(x, numerator);
         let denom_inv = inv(norm[0]);
 
-        Self(numerator[0] * denom_inv, numerator[1] * denom_inv)
+        Self(mul(numerator[0],denom_inv), mul(numerator[1],denom_inv))
     }
 
     #[inline]
