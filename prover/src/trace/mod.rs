@@ -192,6 +192,7 @@ pub trait Trace: Sized {
             self.read_main_frame(step, &mut main_frame);
             air.evaluate_transition(&main_frame, &periodic_values, &mut main_evaluations);
             for (i, &evaluation) in main_evaluations.iter().enumerate() {
+                println!("main transition constraint {}: {}", i, evaluation);
                 assert!(
                     evaluation == Self::BaseField::ZERO,
                     "main transition constraint {} did not evaluate to ZERO at step {}",
