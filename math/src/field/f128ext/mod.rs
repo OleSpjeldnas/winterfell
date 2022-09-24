@@ -484,7 +484,7 @@ fn mul(a: u128, b: u128) -> u128 {
 
 /// Computes y such that (x * y) % m = 1 except for when when x = 0; in such a case,
 /// 0 is returned; x is assumed to be a valid field element.
-fn inv(x: u128) -> u128 {
+fn invu(x: u128) -> u128 {
     if x == 0 {
         return 0;
     };
