@@ -31,7 +31,11 @@ fn mulu128(a: [u128;2], b: [u128;2]) -> [u128;2]{
 //}
 
 fn frobeniusu128(x: [u128; 2]) -> [u128; 2] {
-    [sub(0,x[0]), sub(0,x[1])]
+    [add(x[0],x[1]), sub(0,x[1])]
+}
+fn mul2(a: [u128; 2], b: [u128; 2]) -> [u128; 2] {
+    let z = mul(a[0],b[0]);
+    [add(z,mul(a[1],b[1])), sub(mul(add(a[0],a[1]),add(b[0],b[1])),z)]
 }
 // CONSTANTS
 // ================================================================================================
@@ -85,10 +89,8 @@ impl FieldElement for BaseElement {
 
         let x = [self.0, self.1];
         let numerator = frobeniusu128(x);
-        //println!("numerator {:?}", numerator);
 
-        let norm = mulu128(x, numerator);
-        //println!("norm: {},{}", norm[0], norm[1]);
+        let norm = mul2(x, numerator);
         let denom_inv = inv(norm[0]);
 
         Self(mul(numerator[0],denom_inv), mul(numerator[1],denom_inv))
