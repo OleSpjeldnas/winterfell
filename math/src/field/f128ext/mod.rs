@@ -87,6 +87,7 @@ impl FieldElement for BaseElement {
         let numerator = frobeniusu128(x);
 
         let norm = mulu128(x, numerator);
+        println!("norm: {},{}", norm[0], norm[1]);
         let denom_inv = inv(norm[0]);
 
         Self(mul(numerator[0],denom_inv), mul(numerator[1],denom_inv))
