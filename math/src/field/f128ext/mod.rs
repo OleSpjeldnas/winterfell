@@ -85,6 +85,7 @@ impl FieldElement for BaseElement {
 
         let x = [self.0, self.1];
         let numerator = frobeniusu128(x);
+        println!("numerator {:?}", numerator);
 
         let norm = mulu128(x, numerator);
         println!("norm: {},{}", norm[0], norm[1]);
