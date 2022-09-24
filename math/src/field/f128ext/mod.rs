@@ -19,15 +19,19 @@ use utils::{
 mod tests;
 
 fn mulu128(a: [u128;2], b: [u128;2]) -> [u128;2]{
-    let z = mul(a[0],b[0]);
-    [add(z,mul(a[1],b[1])), sub(mul(add(a[0],a[1]),add(b[0],b[1])),z)]
+    let a0b0 = mul(a[0], b[0]);
+    let a1b1 = mul(a[1], b[1]);
+    let a0b1 = mul(a[0], b[1]);
+    let a1b0 = mul(a[1], b[0]);
+    [sub(a0b0, a1b1), sub(add(a0b1, a1b0),a1b1)]
+
 }
 //fn mul_baseu128(a: [u128; 2], b: u128) -> [u128; 2] {
   //  [mul(a[0],b), mul(a[1],b)]
 //}
 
 fn frobeniusu128(x: [u128; 2]) -> [u128; 2] {
-    [add(x[0],x[1]), sub(0,x[1])]
+    [sub(0,x[0]), sub(0,x[1])]
 }
 // CONSTANTS
 // ================================================================================================
@@ -90,8 +94,7 @@ impl FieldElement for BaseElement {
 
     #[inline]
     fn conjugate(&self) -> Self {
-        let result = frobeniusu128([self.0, self.1]);
-        Self(result[0], result[1])
+        Self(self.0, sub(0, self.1))
     }
 
     fn elements_as_bytes(elements: &[Self]) -> &[u8] {
