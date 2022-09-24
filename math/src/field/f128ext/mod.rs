@@ -14,6 +14,7 @@ use utils::{
     AsBytes, ByteReader, ByteWriter, Deserializable, DeserializationError, Randomizable,
     Serializable,
 };
+pub use ethnum::U256;
 
 #[cfg(test)]
 mod tests;

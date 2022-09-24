@@ -34,7 +34,7 @@ std = ["utils/std"]
 
 [dependencies]
 utils = { version = "0.4", path = "../utils/core", package = "winter-utils", default-features = false }
-
+ethnum = "1"
 [dev-dependencies]
 criterion = "0.3"
 num-bigint = "0.4"
