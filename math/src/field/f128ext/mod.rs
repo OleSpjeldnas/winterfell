@@ -26,12 +26,19 @@ fn mulu128(a: [u128;2], b: [u128;2]) -> [u128;2]{
     [sub(a0b0, a1b1), sub(add(a0b1, a1b0),a1b1)]
 
 }
-//fn mul_baseu128(a: [u128; 2], b: u128) -> [u128; 2] {
-  //  [mul(a[0],b), mul(a[1],b)]
-//}
 
-fn frobeniusu128(x: [u128; 2]) -> [u128; 2] {
-    [add(x[0],x[1]), sub(0,x[1])]
+fn exp(x: [u128; 2], y: u128) -> [u128; 2] {
+    let mut res = [1u128, 0u128];
+    let mut base = x;
+    let mut exp = y;
+    while exp > 0 {
+        if exp % 2 == 1 {
+            res = mulu128(res, base);
+        }
+        exp >>= 1;
+        base = mulu128(base, base);
+    }
+    res
 }
 
 // CONSTANTS
@@ -83,16 +90,14 @@ impl FieldElement for BaseElement {
         if self.1 == 0 {
             return Self(inv(self.0), 0);
         }
-
-        let x = [self.0, self.1];
-        let numerator = frobeniusu128(x);
-        //println!("numerator {:?}", numerator);
-
-        let norm = mulu128(x, numerator);
-        //println!("norm: {},{}", norm[0], norm[1]);
-        let denom_inv = inv(norm[0]);
-
-        Self(mul(numerator[0],denom_inv), mul(numerator[1],denom_inv))
+        let c = [self.0, self.1];
+        let M_s: U256 = U256::from(M).checked_pow(2).unwrap()-U256::new(1);
+        let r = M_s.checked_div(U256::from(M-1u128)).unwrap().as_u128();
+        let r_minus = exp(c, r-1);
+        let rr = mulu128(c, r_minus);
+        let denom_inv = [invu(rr[0]),0];
+        let output = mulu128(rr, denom_inv);
+        Self(output[0], output[1])
     }
 
     #[inline]
