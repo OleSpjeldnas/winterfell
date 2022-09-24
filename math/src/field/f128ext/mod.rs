@@ -89,7 +89,7 @@ impl FieldElement for BaseElement {
             return self;
         }
         if self.1 == 0 {
-            return Self(inv(self.0), 0);
+            return Self(invu(self.0), 0);
         }
         let c = [self.0, self.1];
         let M_s: U256 = U256::from(M).checked_pow(2).unwrap()-U256::new(1);
