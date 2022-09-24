@@ -97,7 +97,7 @@ impl FieldElement for BaseElement {
         let r_minus = exp(c, r-1);
         let rr = mulu128(c, r_minus);
         let denom_inv = [invu(rr[0]),0];
-        let output = mulu128(rr, denom_inv);
+        let output = mulu128(r_minus, denom_inv);
         Self(output[0], output[1])
     }
 
