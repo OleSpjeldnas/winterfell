@@ -201,6 +201,7 @@ impl<E: FieldElement> ConstraintEvaluationTable<E> {
             self.num_rows(),
             self.domain_offset,
         );
+        println!("Divisor: {}", div_values[0]);
 
         // collect actual degrees for all transition constraints by interpolating saved
         // constraint evaluations into polynomials and checking their degree; also
@@ -208,9 +209,12 @@ impl<E: FieldElement> ConstraintEvaluationTable<E> {
         let mut actual_degrees = Vec::with_capacity(self.expected_transition_degrees.len());
         let mut max_degree = 0;
         let inv_twiddles = fft::get_inv_twiddles::<E::BaseField>(self.num_rows());
+        println!("Inv_Twiddle: {}", inv_twiddles[0]);
 
         // first process transition constraint evaluations for the main trace segment
         for evaluations in self.main_transition_evaluations.iter() {
+            println!("Eval1: {}", evaluations[0]);
+            println!("Eval2: {}", evaluations[1]);
             let degree = get_transition_poly_degree(evaluations, &inv_twiddles, &div_values);
             actual_degrees.push(degree);
             max_degree = core::cmp::max(max_degree, degree);
