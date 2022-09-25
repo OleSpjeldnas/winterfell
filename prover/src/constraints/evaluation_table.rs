@@ -464,6 +464,7 @@ fn get_transition_poly_degree<E: FieldElement>(
     inv_twiddles: &[E::BaseField],
     div_values: &[E::BaseField],
 ) -> usize {
+    
     let mut evaluations = evaluations
         .iter()
         .zip(div_values)
