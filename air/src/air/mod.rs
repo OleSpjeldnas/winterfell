@@ -515,11 +515,12 @@ pub trait Air: Send + Sync {
     where
         E: FieldElement<BaseField = Self::BaseField>,
         H: Hasher,
-    {println!("length: {}", self.context().num_transition_constraints());
+    {
         let mut t_coefficients = Vec::new();
         for _ in 0..self.context().num_transition_constraints() {
             t_coefficients.push(public_coin.draw_pair()?);
         }
+        println!("length: {}", t_coefficients[0].1);
 
         let mut b_coefficients = Vec::new();
         for _ in 0..self.context().num_assertions() {
