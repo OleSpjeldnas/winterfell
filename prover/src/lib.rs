@@ -280,8 +280,8 @@ pub trait Prover {
         // make sure the specified trace (including auxiliary segments) is valid against the AIR.
         // This checks validity of both, assertions and state transitions. We do this in debug
         // mode only because this is a very expensive operation.
-        //#[cfg(debug_assertions)]
-        //trace.validate(&air, &aux_trace_segments, &aux_trace_rand_elements);
+        #[cfg(debug_assertions)]
+        trace.validate(&air, &aux_trace_segments, &aux_trace_rand_elements);
 
         // 2 ----- evaluate constraints -----------------------------------------------------------
         // evaluate constraints specified by the AIR over the constraint evaluation domain, and
