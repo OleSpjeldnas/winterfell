@@ -190,6 +190,7 @@ pub trait Trace: Sized {
             // evaluate transition constraints for the main trace segment and make sure they all
             // evaluate to zeros
             self.read_main_frame(step, &mut main_frame);
+            println!("Phi: {}, Phii: {}, Psi: {}", main_frame.current()[0], main_frame.current()[1], main_frame.current()[2])
             air.evaluate_transition(&main_frame, &periodic_values, &mut main_evaluations);
             for (i, &evaluation) in main_evaluations.iter().enumerate() {
                 println!("main transition constraint {}: {}", i, evaluation);
