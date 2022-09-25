@@ -520,6 +520,9 @@ pub trait Air: Send + Sync {
         for _ in 0..self.context().num_transition_constraints() {
             t_coefficients.push(public_coin.draw_pair()?);
         }
+        for i in 0..t_coefficients.len(){
+            println!("T_Coeff: {}", t_coefficients[i]);
+        }
 
         let mut b_coefficients = Vec::new();
         for _ in 0..self.context().num_assertions() {
