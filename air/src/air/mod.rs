@@ -521,7 +521,7 @@ pub trait Air: Send + Sync {
             t_coefficients.push(public_coin.draw_pair()?);
         }
         for i in 0..t_coefficients.len(){
-            println!("T_Coeff: {}", t_coefficients[i]);
+            println!("T_Coeff: {} and {}", t_coefficients[i].0, t_coefficients[i].1);
         }
 
         let mut b_coefficients = Vec::new();
