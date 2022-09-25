@@ -173,6 +173,9 @@ impl<'a, A: Air, E: FieldElement<BaseField = A::BaseField>> ConstraintEvaluator<
             // when in debug mode, save transition constraint evaluations
             #[cfg(debug_assertions)]
             fragment.update_transition_evaluations(step, &t_evaluations, &[]);
+            for i in 0..evaluations.len() {
+                println!("Evaluation_t {}: {}", i, evaluations[i]);
+            }
 
             // evaluate boundary constraints; the results go into remaining slots of the
             // evaluations buffer
