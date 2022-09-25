@@ -113,7 +113,7 @@ impl<B: StarkField, H: Hasher> RandomCoin<B, H> {
     /// # Examples
     /// ```
     /// # use winter_crypto::{RandomCoin, Hasher, hashers::Blake3_256};
-    /// # use math::fields::f128::BaseElement;
+    /// # use math::fields::f128ext::BaseElement;
     /// let mut coin1 = RandomCoin::<BaseElement, Blake3_256<BaseElement>>::new(&[1, 2, 3, 4]);
     /// let mut coin2 = RandomCoin::<BaseElement, Blake3_256<BaseElement>>::new(&[1, 2, 3, 4]);
     ///
@@ -183,6 +183,7 @@ impl<B: StarkField, H: Hasher> RandomCoin<B, H> {
         for _ in 0..1000 {
             // get the next pseudo-random value and take the first ELEMENT_BYTES from it
             let value = self.next();
+
             let bytes = &value.as_bytes()[..E::ELEMENT_BYTES as usize];
 
             // check if the bytes can be converted into a valid field element; if they can,

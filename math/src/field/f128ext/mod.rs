@@ -12,7 +12,7 @@ use utils::{
     collections::Vec,
     string::{String, ToString},
     AsBytes, ByteReader, ByteWriter, Deserializable, DeserializationError, Randomizable,
-    Serializable,
+    Serializable,SliceReader
 };
 pub use ethnum::U256;
 
@@ -47,9 +47,6 @@ fn exp(x: [u128; 2], y: u128) -> [u128; 2] {
 
 // Field modulus = 2^128 - 45 * 2^40 + 1
 const M: u128 = 340282366920938463463374557953744961537;
-
-// 2^40 root of unity
-const G: (u128, u128) = (264391623620689261582012105083010927877,251681611782961119009981616953806114355);
 
 // Number of bytes needed to represent field element
 const ELEMENT_BYTES: usize = core::mem::size_of::<u128>()*2;
@@ -167,17 +164,17 @@ impl StarkField for BaseElement {
     const MODULUS_BITS: u32 = 128;
 
     /// sage: GF(MODULUS).primitive_element() \
-    /// 3
+    /// 3 + a
     const GENERATOR: Self = BaseElement(3,1);
 
-    /// sage: is_odd((MODULUS - 1) / 2^40) \
+    /// sage: is_odd((MODULUS - 1) / 2^41) \
     /// True
-    const TWO_ADICITY: u32 = 40;
+    const TWO_ADICITY: u32 = 41;
 
-    /// sage: k = (MODULUS - 1) / 2^40 \
+    /// sage: k = (MODULUS - 1) / 2^41 \
     /// sage: GF(MODULUS).primitive_element()^k \
     /// 23953097886125630542083529559205016746
-    const TWO_ADIC_ROOT_OF_UNITY: Self = BaseElement(G.0,G.1);
+    const TWO_ADIC_ROOT_OF_UNITY: Self = BaseElement(104396716785734396356617275868874265328u128,208793433571468792713234551737748530656u128);
 
     fn get_modulus_le_bytes() -> Vec<u8> {
         Self::MODULUS.to_le_bytes().to_vec()
@@ -369,23 +366,27 @@ impl From<[u8; 16]> for BaseElement {
 }
 
 impl<'a> TryFrom<&'a [u8]> for BaseElement {
-    type Error = String;
+    type Error = DeserializationError;
 
     /// Converts a slice of bytes into a field element; returns error if the value encoded in bytes
     /// is not a valid field element. The bytes are assumed to be in little-endian byte order.
     fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
-        let value = bytes
-            .try_into()
-            .map(u128::from_le_bytes)
-            .map_err(|error| format!("{}", error))?;
-        if value >= M {
-            return Err(format!(
-                "cannot convert bytes into a field element: \
-                value {} is greater or equal to the field modulus",
-                value
-            ));
+        if bytes.len() < Self::ELEMENT_BYTES {
+            return Err(DeserializationError::InvalidValue(format!(
+                "not enough bytes for a full field element; expected {} bytes, but was {} bytes",
+                Self::ELEMENT_BYTES,
+                bytes.len(),
+            )));
         }
-        Ok(BaseElement(value,0))
+        if bytes.len() > Self::ELEMENT_BYTES {
+            return Err(DeserializationError::InvalidValue(format!(
+                "too many bytes for a field element; expected {} bytes, but was {} bytes",
+                Self::ELEMENT_BYTES,
+                bytes.len(),
+            )));
+        }
+        let mut reader = SliceReader::new(bytes);
+        Self::read_from(&mut reader)
     }
 }
 
@@ -402,8 +403,8 @@ impl AsBytes for BaseElement {
 
 impl Serializable for BaseElement {
     fn write_into<W: ByteWriter>(&self, target: &mut W) {
-        write_into(self.0,target);
-        write_into(self.1,target);
+        target.write_u8_slice(&self.0.to_le_bytes());
+        target.write_u8_slice(&self.1.to_le_bytes());
     }
 }
 
@@ -411,7 +412,7 @@ impl Deserializable for BaseElement {
     fn read_from<R: ByteReader>(source: &mut R) -> Result<Self, DeserializationError> {
         let value1 = source.read_u128()?;
         let value2 = source.read_u128()?;
-        if value1 >= M {
+        if value1 >= M ||  value2 >= M {
             return Err(DeserializationError::InvalidValue(format!(
                 "invalid field element: value {} is greater than or equal to the field modulus",
                 value1

@@ -123,17 +123,18 @@ fn conjugate() {
 
 #[test]
 fn get_root_of_unity() {
-    let root_40 = BaseElement::get_root_of_unity(40);
+    let root_40 = BaseElement::get_root_of_unity(41);
+    println!("Root: {}", root_40);
     assert_eq!(
-        BaseElement::from(23953097886125630542083529559205016746u128),
+        BaseElement::new(104396716785734396356617275868874265328u128,208793433571468792713234551737748530656u128),
         root_40
     );
-    assert_eq!(BaseElement::ONE, root_40.exp(u128::pow(2, 40)));
+    assert_eq!(BaseElement::ONE, root_40.exp(u128::pow(2, 41)));
 
-    let root_39 = BaseElement::get_root_of_unity(39);
+    let root_39 = BaseElement::get_root_of_unity(40);
     let expected = root_40.exp(2);
     assert_eq!(expected, root_39);
-    assert_eq!(BaseElement::ONE, root_39.exp(u128::pow(2, 39)));
+    assert_eq!(BaseElement::ONE, root_39.exp(u128::pow(2, 40)));
 }
 
 #[test]
@@ -160,38 +161,38 @@ fn quad_mul_base() {
 
 #[test]
 fn elements_as_bytes() {
-    let source = vec![
-        BaseElement::new(1),
-        BaseElement::new(2),
-        BaseElement::new(3),
-        BaseElement::new(4),
-    ];
-
     let expected: Vec<u8> = vec![
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+    ];
+    let bytes = vec![
+        BaseElement::new(1,0),
+        BaseElement::new(2,0),
+        BaseElement::new(3,0),
+        BaseElement::new(4,0),
     ];
 
-    assert_eq!(expected, BaseElement::elements_as_bytes(&source));
+    assert_eq!(expected, BaseElement::elements_as_bytes(&bytes));
 }
 
 #[test]
 fn bytes_as_elements() {
     let bytes: Vec<u8> = vec![
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 5,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0
     ];
-
     let expected = vec![
-        BaseElement::new(1),
-        BaseElement::new(2),
-        BaseElement::new(3),
-        BaseElement::new(4),
+        BaseElement::new(1,0),
+        BaseElement::new(2,0),
+        BaseElement::new(3,0),
+        BaseElement::new(4,0),
     ];
 
-    let result = unsafe { BaseElement::bytes_as_elements(&bytes[..64]) };
+    let result = unsafe { BaseElement::bytes_as_elements(&bytes[..128]) };
     assert!(result.is_ok());
     assert_eq!(expected, result.unwrap());
 
@@ -205,37 +206,39 @@ fn bytes_as_elements() {
 #[test]
 fn read_elements_from() {
     let bytes: Vec<u8> = vec![
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 5
     ];
     let expected = vec![
-        BaseElement::new(1),
-        BaseElement::new(2),
-        BaseElement::new(3),
-        BaseElement::new(4),
+        BaseElement::new(1,0),
+        BaseElement::new(2,0),
+        BaseElement::new(3,0),
+        BaseElement::new(4,0),
     ];
 
     // fill whole target
-    let mut reader = SliceReader::new(&bytes[..64]);
+    let mut reader = SliceReader::new(&bytes[..128]);
     let result = BaseElement::read_batch_from(&mut reader, 4);
     assert!(result.is_ok());
     assert_eq!(expected, result.unwrap());
     assert_eq!(false, reader.has_more_bytes());
 
     // partial number of elements
-    let mut reader = SliceReader::new(&bytes[..65]);
+    let mut reader = SliceReader::new(&bytes[..129]);
     let result = BaseElement::read_batch_from(&mut reader, 4);
     assert!(result.is_ok());
     assert_eq!(expected, result.unwrap());
     assert_eq!(true, reader.has_more_bytes());
+    //println!("so far so good");
 
     // invalid element
-    let mut reader = SliceReader::new(&bytes[16..]);
+    let mut reader = SliceReader::new(&bytes[32..]);
     let result = BaseElement::read_batch_from(&mut reader, 4);
     assert!(result.is_err());
     match result {
-        Err(err) => {
+        Err(err) => {println!("so far so good");
             assert!(matches!(err, DeserializationError::InvalidValue(_)));
         }
         _ => (),
