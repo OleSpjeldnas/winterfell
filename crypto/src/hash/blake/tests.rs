@@ -4,13 +4,13 @@
 // LICENSE file in the root directory of this source tree.
 
 use super::{Blake3_256, ElementHasher, Hasher};
-use math::{fields::f62::BaseElement, FieldElement};
+use math::{fields::f128ext::BaseElement, FieldElement};
 use rand_utils::rand_array;
 
 #[test]
 fn hash_padding() {
-    let b1 = [1_u8, 2, 3];
-    let b2 = [1_u8, 2, 3, 0];
+    let b1 = [(1u8), (2u8), (3u8)];
+    let b2 = [(1u8), (2u8), (3u8), (0u8)];
 
     // adding a zero bytes at the end of a byte string should result in a different hash
     let r1 = Blake3_256::<BaseElement>::hash(&b1);

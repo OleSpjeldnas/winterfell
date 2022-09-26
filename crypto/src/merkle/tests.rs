@@ -4,7 +4,7 @@
 // LICENSE file in the root directory of this source tree.
 
 use super::*;
-use math::fields::f128::BaseElement;
+use math::fields::f128ext::BaseElement;
 use proptest::prelude::*;
 
 type Digest256 = crate::hash::ByteDigest<32>;

@@ -10,7 +10,7 @@ use crate::{
 };
 use crypto::{hashers::Blake3_256, ElementHasher, MerkleTree};
 use math::{
-    fields::f128::BaseElement, get_power_series, get_power_series_with_offset, log2, polynom,
+    fields::f128ext::BaseElement, get_power_series, get_power_series_with_offset, log2, polynom,
     FieldElement, StarkField,
 };
 use utils::collections::Vec;
@@ -25,7 +25,7 @@ fn new_trace_table() {
     assert_eq!(2, trace.main_trace_width());
     assert_eq!(8, trace.length());
 
-    let expected: Vec<BaseElement> = vec![1u32, 2, 5, 13, 34, 89, 233, 610]
+    let expected: Vec<BaseElement> = vec![(1u32), (2u32), (5u32), (13u32), (34u32), (89u32), (233u32), (610u32)]
         .into_iter()
         .map(BaseElement::from)
         .collect();
@@ -65,14 +65,14 @@ fn extend_trace_table() {
     let trace_domain = get_power_series(trace_root, trace_length);
     assert_eq!(2, trace_polys.num_main_trace_polys());
     assert_eq!(
-        vec![1u32, 2, 5, 13, 34, 89, 233, 610]
+        vec![(1u32), (2u32), (5u32), (13u32), (34u32), (89u32), (233u32), (610u32)]
             .into_iter()
             .map(BaseElement::from)
             .collect::<Vec<BaseElement>>(),
         polynom::eval_many(trace_polys.get_main_trace_poly(0), &trace_domain)
     );
     assert_eq!(
-        vec![1u32, 3, 8, 21, 55, 144, 377, 987]
+        vec![(1u32), (3u32), (8u32), (21u32), (55u32), (144u32), (377u32), (987u32)]
             .into_iter()
             .map(BaseElement::from)
             .collect::<Vec<BaseElement>>(),

@@ -8,7 +8,7 @@ use air::{
     Air, AirContext, Assertion, EvaluationFrame, FieldExtension, HashFunction, ProofOptions,
     TraceInfo, TransitionConstraintDegree,
 };
-use math::{fields::f128::BaseElement, FieldElement, StarkField};
+use math::{fields::f128ext::BaseElement, FieldElement, StarkField};
 use utils::collections::Vec;
 
 // FIBONACCI TRACE BUILDER

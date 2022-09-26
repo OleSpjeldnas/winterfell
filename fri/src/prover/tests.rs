@@ -9,7 +9,7 @@ use crate::{
     FriOptions, FriProof, VerifierError,
 };
 use crypto::{hashers::Blake3_256, Hasher, RandomCoin};
-use math::{fft, fields::f128::BaseElement, FieldElement};
+use math::{fft, fields::f128ext::BaseElement, FieldElement};
 use utils::{collections::Vec, Deserializable, Serializable, SliceReader};
 
 type Blake3 = Blake3_256<BaseElement>;
@@ -57,7 +57,7 @@ pub fn build_prover_channel(
 
 pub fn build_evaluations(trace_length: usize, lde_blowup: usize) -> Vec<BaseElement> {
     let mut p = (0..trace_length as u128)
-        .map(BaseElement::new)
+        .map(BaseElement::from)
         .collect::<Vec<_>>();
     let domain_size = trace_length * lde_blowup;
     p.resize(domain_size, BaseElement::ZERO);

@@ -4,7 +4,7 @@
 // LICENSE file in the root directory of this source tree.
 
 use crate::{
-    field::{f128::BaseElement, StarkField},
+    field::{f128ext::BaseElement, StarkField},
     polynom,
     utils::{get_power_series, log2},
 };
