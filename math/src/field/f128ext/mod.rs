@@ -139,7 +139,7 @@ impl FieldElement for BaseElement {
         // Self::ZERO here as much less efficient initialization procedure will be invoked.
         // We also use u128 to make sure the memory is aligned correctly for our element size.
         debug_assert_eq!(Self::ELEMENT_BYTES, mem::size_of::<u128>()*2);
-        let result = vec![0u128; n];
+        let result = vec![(0u128,0u128); n];
 
         // translate a zero-filled vector of u128s into a vector of base field elements
         let mut v = core::mem::ManuallyDrop::new(result);

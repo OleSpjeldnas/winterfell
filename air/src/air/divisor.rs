@@ -187,7 +187,7 @@ pub fn get_trace_domain_value_at<B: StarkField>(trace_length: usize, step: usize
 #[cfg(test)]
 mod tests {
     use super::*;
-    use math::{fields::f128::BaseElement, polynom};
+    use math::{fields::f128ext::BaseElement, polynom};
 
     #[test]
     fn constraint_divisor_degree() {
@@ -199,8 +199,8 @@ mod tests {
         let div = ConstraintDivisor::new(
             vec![
                 (4, BaseElement::ONE),
-                (2, BaseElement::new(2)),
-                (3, BaseElement::new(3)),
+                (2, BaseElement::new(2, 0)),
+                (3, BaseElement::new(3,0)),
             ],
             vec![],
         );
@@ -210,10 +210,10 @@ mod tests {
         let div = ConstraintDivisor::new(
             vec![
                 (4, BaseElement::ONE),
-                (2, BaseElement::new(2)),
-                (3, BaseElement::new(3)),
+                (2, BaseElement::new(2,0)),
+                (3, BaseElement::new(3,0)),
             ],
-            vec![BaseElement::ONE, BaseElement::new(2)],
+            vec![BaseElement::ONE, BaseElement::new(2,0)],
         );
         assert_eq!(7, div.degree());
     }
@@ -222,33 +222,33 @@ mod tests {
     fn constraint_divisor_evaluation() {
         // single term numerator: (x^4 - 1)
         let div = ConstraintDivisor::new(vec![(4, BaseElement::ONE)], vec![]);
-        assert_eq!(BaseElement::new(15), div.evaluate_at(BaseElement::new(2)));
+        assert_eq!(BaseElement::new(15,0), div.evaluate_at(BaseElement::new(2,0)));
 
         // multi-term numerator: (x^4 - 1) * (x^2 - 2) * (x^3 - 3)
         let div = ConstraintDivisor::new(
             vec![
                 (4, BaseElement::ONE),
-                (2, BaseElement::new(2)),
-                (3, BaseElement::new(3)),
+                (2, BaseElement::new(2,0)),
+                (3, BaseElement::new(3,0)),
             ],
             vec![],
         );
-        let expected = BaseElement::new(15) * BaseElement::new(2) * BaseElement::new(5);
-        assert_eq!(expected, div.evaluate_at(BaseElement::new(2)));
+        let expected = BaseElement::new(15,0) * BaseElement::new(2,0) * BaseElement::new(5,0);
+        assert_eq!(expected, div.evaluate_at(BaseElement::new(2,0)));
 
         // multi-term numerator with exemption points:
         // (x^4 - 1) * (x^2 - 2) * (x^3 - 3) / ((x - 1) * (x - 2))
         let div = ConstraintDivisor::new(
             vec![
                 (4, BaseElement::ONE),
-                (2, BaseElement::new(2)),
-                (3, BaseElement::new(3)),
+                (2, BaseElement::new(2,0)),
+                (3, BaseElement::new(3,0)),
             ],
-            vec![BaseElement::ONE, BaseElement::new(2)],
+            vec![BaseElement::ONE, BaseElement::new(2,0)],
         );
-        let expected = BaseElement::new(255) * BaseElement::new(14) * BaseElement::new(61)
-            / BaseElement::new(6);
-        assert_eq!(expected, div.evaluate_at(BaseElement::new(4)));
+        let expected = BaseElement::new(255,0) * BaseElement::new(14,0) * BaseElement::new(61,0)
+            / BaseElement::new(6,0);
+        assert_eq!(expected, div.evaluate_at(BaseElement::new(4,0)));
     }
 
     #[test]

@@ -5,7 +5,7 @@
 
 use super::remove_leading_zeros;
 use crate::{
-    field::{f128::BaseElement, FieldElement, StarkField},
+    field::{f128ext::BaseElement, FieldElement, StarkField},
     utils::{get_power_series, log2},
 };
 use utils::collections::Vec;

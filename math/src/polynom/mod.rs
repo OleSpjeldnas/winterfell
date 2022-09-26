@@ -16,7 +16,7 @@
 //! in reverse coefficient form. A few examples:
 //!
 //! ```
-//! # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+//! # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 //! // p(x) = 2 * x + 1
 //! let p = vec![BaseElement::new(1), BaseElement::new(2)];
 //!
@@ -42,12 +42,12 @@ mod tests;
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// // define polynomial: f(x) = 3 * x^2 + 2 * x + 1
 /// let p = (1u32..4).map(BaseElement::from).collect::<Vec<_>>();
 ///
 /// // evaluate the polynomial at point 4
-/// let x = BaseElement::new(4);
+/// let x = BaseElement::from(4);
 /// assert_eq!(BaseElement::new(57), eval(&p, x));
 /// ```
 pub fn eval<B, E>(p: &[B], x: E) -> E
@@ -69,7 +69,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// // define polynomial: f(x) = 3 * x^2 + 2 * x + 1
 /// let p = (1_u32..4).map(BaseElement::from).collect::<Vec<_>>();
 /// let xs = (3_u32..6).map(BaseElement::from).collect::<Vec<_>>();
@@ -101,7 +101,7 @@ where
 /// # Example
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// # use rand_utils::rand_vector;
 /// let xs: Vec<BaseElement> = rand_vector(16);
 /// let ys: Vec<BaseElement> = rand_vector(16);
@@ -160,7 +160,7 @@ where
 /// ```
 /// # use core::convert::TryInto;
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// # use rand_utils::rand_array;
 /// let x_batches: Vec<[BaseElement; 8]> = vec![
 ///     rand_array(),
@@ -233,7 +233,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// // p1(x) = 4 * x^2 + 3 * x + 2
 /// let p1 = (2_u32..5).map(BaseElement::from).collect::<Vec<_>>();
 /// // p2(x) = 2 * x + 1
@@ -271,7 +271,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// // p1(x) = 4 * x^2 + 3 * x + 2
 /// let p1 = (2_u32..5).map(BaseElement::from).collect::<Vec<_>>();
 /// // p2(x) = 2 * x + 1
@@ -308,11 +308,11 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// // p1(x) = x + 1
 /// let p1 = [BaseElement::ONE, BaseElement::ONE];
 /// // p2(x) = x^2 + 2
-/// let p2 = [BaseElement::new(2), BaseElement::ZERO, BaseElement::ONE];
+/// let p2 = [BaseElement::from(2), BaseElement::ZERO, BaseElement::ONE];
 ///
 /// // expected result = x^3 + x^2 + 2 * x + 2
 /// let expected = vec![
@@ -346,13 +346,13 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::polynom::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement};
 /// let p = [
-///     BaseElement::new(1),
-///     BaseElement::new(2),
-///     BaseElement::new(3),
+///     BaseElement::from(1),
+///     BaseElement::from(2),
+///     BaseElement::from(3),
 /// ];
-/// let k = BaseElement::new(2);
+/// let k = BaseElement::from(2);
 ///
 /// let expected = vec![
 ///     BaseElement::new(2),
@@ -391,10 +391,10 @@ where
 /// # use winter_math::{fields::{f128::BaseElement}, FieldElement};
 /// // p1(x) = x^3 + x^2 + 2 * x + 2
 /// let p1 = [
-///     BaseElement::new(2),
-///     BaseElement::new(2),
-///     BaseElement::new(1),
-///     BaseElement::new(1),
+///     BaseElement::from(2),
+///     BaseElement::from(2),
+///     BaseElement::from(1),
+///     BaseElement::from(1),
 /// ];
 /// // p2(x) = x^2 + 2
 /// let p2 = [BaseElement::new(2), BaseElement::ZERO, BaseElement::ONE];
