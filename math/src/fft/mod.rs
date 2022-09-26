@@ -62,7 +62,7 @@ const MIN_CONCURRENT_SIZE: usize = 1024;
 /// # Examples
 /// ```
 /// # use winter_math::{polynom, fft::*, get_power_series, log2};
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// # use rand_utils::rand_vector;
 /// let n = 2048;
 ///
@@ -145,7 +145,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::{polynom, fft::*, log2, get_power_series};
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// # use rand_utils::rand_vector;
 /// let n = 2048;
 /// let offset = BaseElement::GENERATOR;
@@ -251,7 +251,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::{polynom, fft::*, get_power_series, log2};
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// # use rand_utils::rand_vector;
 /// let n = 2048;
 ///
@@ -340,7 +340,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::{polynom, fft::*, get_power_series, log2};
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// # use rand_utils::rand_vector;
 /// let n = 2048;
 /// let offset = BaseElement::GENERATOR;
@@ -458,7 +458,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::fft::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// let n = 2048;
 /// let twiddles = get_twiddles::<BaseElement>(n);
 ///
@@ -498,7 +498,7 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::fft::*;
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// let n = 2048;
 /// let inv_twiddles = get_inv_twiddles::<BaseElement>(n);
 ///
@@ -548,13 +548,13 @@ where
 /// # Examples
 /// ```
 /// # use winter_math::{polynom, fft::*, get_power_series, log2};
-/// # use winter_math::{fields::{f128::BaseElement}, FieldElement, StarkField};
+/// # use winter_math::{fields::{f128ext::BaseElement}, FieldElement, StarkField};
 /// let offset = BaseElement::GENERATOR;
 /// // p(x) = x^2 + 1
 /// let p = [
-///     BaseElement::new(1),
+///     BaseElement::ONE,
 ///     BaseElement::ZERO,
-///     BaseElement::new(1),
+///     BaseElement::ONE,
 ///     BaseElement::ZERO,
 /// ];
 ///

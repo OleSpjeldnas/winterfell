@@ -96,7 +96,7 @@ impl<'a, A: Air, E: FieldElement<BaseField = A::BaseField>> ConstraintEvaluator<
         #[cfg(debug_assertions)]
         let mut evaluation_table =
             ConstraintEvaluationTable::<E>::new(domain, divisors, &self.transition_constraints);
-
+        //let evals = evaluation_table.evaluations;
         // when `concurrent` feature is enabled, break the evaluation table into multiple fragments
         // to evaluate them into multiple threads; unless the constraint evaluation domain is small,
         // then don't bother with concurrent evaluation
@@ -173,9 +173,7 @@ impl<'a, A: Air, E: FieldElement<BaseField = A::BaseField>> ConstraintEvaluator<
             // when in debug mode, save transition constraint evaluations
             #[cfg(debug_assertions)]
             fragment.update_transition_evaluations(step, &t_evaluations, &[]);
-            for i in 0..evaluations.len() {
-                println!("Evaluation_t {}: {}", i, evaluations[i]);
-            }
+           
 
             // evaluate boundary constraints; the results go into remaining slots of the
             // evaluations buffer
