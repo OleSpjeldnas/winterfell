@@ -291,9 +291,6 @@ where
         "multiplicative subgroup of size {} does not exist in the specified base field",
         evaluations.len()
     );
-    for i in 0..evaluations.len() {
-        println!("Evaluation {}: {}", i, evaluations[i]);
-    }
 
     // when `concurrent` feature is enabled, run the concurrent version of interpolate_poly;
     // unless the number of evaluations is small, then don't bother with the concurrent version
