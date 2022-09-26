@@ -201,7 +201,6 @@ impl<E: FieldElement> ConstraintEvaluationTable<E> {
             self.num_rows(),
             self.domain_offset,
         );
-        println!("Divisor: {}", div_values[0]);
 
         // collect actual degrees for all transition constraints by interpolating saved
         // constraint evaluations into polynomials and checking their degree; also
