@@ -30,12 +30,14 @@ fn add() {
     assert_eq!(BaseElement::ONE, t + BaseElement::from(2u8));
 
     // test random values
-    let r1: BaseElement = rand_value();
-    let r2: BaseElement = rand_value();
+    let r1: u128 = rand_value();
+    let r2: u128 = rand_value();
+    let r11 = BaseElement(r1,0);
+    let r21 = BaseElement(r2,0);
 
-    let expected = (r1.to_big_uint() + r2.to_big_uint()) % BigUint::from(M);
+    let expected = (r11.to_big_uint() + r21.to_big_uint()) % BigUint::from(M);
     let expected = BaseElement::from_big_uint(expected);
-    assert_eq!(expected, r1 + r2);
+    assert_eq!(expected, r11 + r21);
 }
 
 #[test]
@@ -82,11 +84,11 @@ fn mul() {
     );
 
     // test random values
-    let v1: Vec<BaseElement> = rand_vector(1000);
-    let v2: Vec<BaseElement> = rand_vector(1000);
+    let v1: Vec<u128> = rand_vector(1000);
+    let v2: Vec<u128> = rand_vector(1000);
     for i in 0..v1.len() {
-        let r1 = v1[i];
-        let r2 = v2[i];
+        let r1 = BaseElement(v1[i],0);
+        let r2 = BaseElement(v2[i],0);
 
         let expected = (r1.to_big_uint() * r2.to_big_uint()) % BigUint::from(M);
         let expected = BaseElement::from_big_uint(expected);
@@ -140,7 +142,7 @@ fn get_root_of_unity() {
 #[test]
 fn test_g_is_2_exp_40_root() {
     let g = BaseElement::TWO_ADIC_ROOT_OF_UNITY;
-    assert_eq!(g.exp(1u128 << 40), BaseElement::ONE);
+    assert_eq!(g.exp(1u128 << 41), BaseElement::ONE);
 }
 
 // FIELD EXTENSIONS
@@ -165,7 +167,7 @@ fn elements_as_bytes() {
         1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 
     ];
     let bytes = vec![
         BaseElement::new(1,0),
@@ -180,10 +182,11 @@ fn elements_as_bytes() {
 #[test]
 fn bytes_as_elements() {
     let bytes: Vec<u8> = vec![
-        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        5
     ];
     let expected = vec![
         BaseElement::new(1,0),
@@ -238,7 +241,7 @@ fn read_elements_from() {
     let result = BaseElement::read_batch_from(&mut reader, 4);
     assert!(result.is_err());
     match result {
-        Err(err) => {println!("so far so good");
+        Err(err) => {
             assert!(matches!(err, DeserializationError::InvalidValue(_)));
         }
         _ => (),
@@ -267,7 +270,7 @@ impl BaseElement {
 
     pub fn from_big_uint(value: BigUint) -> Self {
         let bytes = value.to_bytes_le();
-        let mut buffer = [0u8; 16];
+        let mut buffer = [0;32];
         buffer[0..bytes.len()].copy_from_slice(&bytes);
         BaseElement::try_from(buffer).unwrap()
     }

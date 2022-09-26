@@ -41,6 +41,19 @@ fn exp(x: [u128; 2], y: u128) -> [u128; 2] {
     }
     res
 }
+fn exp256(x: [u128; 2], y: U256) -> [u128; 2] {
+    let mut res = [1u128, 0u128];
+    let mut base = x;
+    let mut exp = y;
+    while exp > 0 {
+        if exp % 2 == 1 {
+            res = mulu128(res, base);
+        }
+        exp >>= 1;
+        base = mulu128(base, base);
+    }
+    res
+}
 
 // CONSTANTS
 // ================================================================================================
@@ -89,18 +102,19 @@ impl FieldElement for BaseElement {
             return Self(invu(self.0), 0);
         }
         let c = [self.0, self.1];
-        let M_s: U256 = U256::from(M).checked_pow(2).unwrap()-U256::new(1);
-        let r = M_s.checked_div(U256::from(M-1u128)).unwrap().as_u128();
+        let m_s: U256 = U256::from(M).checked_pow(2).unwrap()-U256::new(1);
+        let r = m_s.checked_div(U256::from(M-1u128)).unwrap().as_u128();
         let r_minus = exp(c, r-1);
         let rr = mulu128(c, r_minus);
         let denom_inv = [invu(rr[0]),0];
         let output = mulu128(r_minus, denom_inv);
         Self(output[0], output[1])
     }
+    
 
     #[inline]
     fn conjugate(&self) -> Self {
-        Self(self.0, sub(0, self.1))
+        Self(self.0, frobenius(*self).1)
     }
 
     fn elements_as_bytes(elements: &[Self]) -> &[u8] {
@@ -124,7 +138,7 @@ impl FieldElement for BaseElement {
         let len = bytes.len() / Self::ELEMENT_BYTES;
 
         // make sure the bytes are aligned on the boundary consistent with base element alignment
-        if (p as usize) % Self::ELEMENT_BYTES != 0 {
+        if 2*(p as usize) % Self::ELEMENT_BYTES != 0 {
             return Err(DeserializationError::InvalidValue(
                 "slice memory alignment is not valid for this field element type".to_string(),
             ));
@@ -364,6 +378,16 @@ impl From<[u8; 16]> for BaseElement {
         BaseElement(value,0)
     }
 }
+impl From<[u8; 32]> for BaseElement {
+    /// Converts the value encoded in an array of 32 bytes into a field element. The bytes
+    /// are assumed to be in little-endian byte order. If the value is greater than or equal
+    /// to the field modulus, modular reduction is silently performed.
+    fn from(bytes: [u8; 32]) -> Self {
+        let value1 = u128::from_le_bytes(bytes[..16].try_into().unwrap());
+        let value2 = u128::from_le_bytes(bytes[16..].try_into().unwrap());
+        BaseElement(value1,value2)
+    }
+}
 
 impl<'a> TryFrom<&'a [u8]> for BaseElement {
     type Error = DeserializationError;
@@ -397,7 +421,11 @@ impl AsBytes for BaseElement {
         unsafe { slice::from_raw_parts(self_ptr as *const u8, BaseElement::ELEMENT_BYTES) }
     }
 }
-
+fn frobenius(a: BaseElement) -> BaseElement {
+    let m_s = U256::from(M).checked_pow(2).unwrap();
+    let b = exp256([a.0,a.1], m_s);
+    BaseElement(b[0], b[1])
+}
 // SERIALIZATION / DESERIALIZATION
 // ------------------------------------------------------------------------------------------------
 
